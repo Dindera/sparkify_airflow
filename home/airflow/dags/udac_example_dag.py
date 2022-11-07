@@ -9,8 +9,9 @@ from helpers import SqlQueries
 # AWS_KEY = os.environ.get('AWS_KEY')
 # AWS_SECRET = os.environ.get('AWS_SECRET')
 
+
 default_args = {
-    'owner': 'udacity',
+    'owner': 'Udacity project completed by Dindera',
     'start_date': datetime(2019, 1, 12),
     'depends_on_past': False,
     'catchup': False,
@@ -31,19 +32,21 @@ stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
     redshift_conn_id="redshift",
+    s3_bucket="udacity-dend",
+    s3_data="log_data",
+    stage_table="staging_events",
     aws_credentials_id="aws_credentials",
-    s3_data_path="s3://udacity-dend/log_data",
-    stage_table="staging_events"
-
+    json="s3://udacity-dend/log_json_path.json"
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
     dag=dag,
     redshift_conn_id="redshift",
-    aws_credentials_id="aws_credentials",
-    s3_data_path="s3://udacity-dend/song_data",
-    stage_table="staging_songs"
+    s3_bucket="udacity-dend",
+    s3_data="song_data/A/A/A",
+    stage_table="staging_songs",
+    aws_credentials_id="aws_credentials"
 )
 
 load_songplays_table = LoadFactOperator(
