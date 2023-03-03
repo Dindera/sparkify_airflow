@@ -24,7 +24,7 @@ default_args = {
 dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          schedule_interval='0 * * * *'
+          schedule_interval='@hourly'
         )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -97,7 +97,13 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    aws_credentials_id="aws_credentials",
+    retries_n=2,
+    params = {
+        'songplays_table': 'songplays'
+    }
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
