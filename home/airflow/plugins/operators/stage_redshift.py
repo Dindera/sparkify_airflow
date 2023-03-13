@@ -12,9 +12,7 @@ class StageToRedshiftOperator(BaseOperator):
     ACCESS_KEY_ID '{}'
     SECRET_ACCESS_KEY '{}'
     REGION 'us-west-2'
-    FORMAT AS JSON '{}'
-    IGNOREHEADER {}
-    DELIMITER '{}';
+    JSON '{}'
     """
 
     @apply_defaults
@@ -54,10 +52,7 @@ class StageToRedshiftOperator(BaseOperator):
             s3_path,
             credentials.access_key,
             credentials.secret_key,
-            self.json,
-            self.ignore_header,
-            self.delimiter
-            
+            self.json
         )
         redshift.run(formatted_sql)
         

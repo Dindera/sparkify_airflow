@@ -30,10 +30,18 @@ class DataQualityOperator(BaseOperator):
         
         for table in self.tables:
             records = redshift.get_records(f"SELECT COUNT(*) FROM {table}")
+           
             record_count = records[0][0]
+            
             if len(records) < 1 or len(records[0]) < 1:
                 raise ValueError(f"Data quality check failed. {table} contains {record_count}")
+            elif table == "songs":
+                check_null = redshift.get_records(f"SELECT COUNT(*) FROM {table} WHERE artistid = NULL")
+                null_count = check_null[0][0]
+                if null_count < 0:
+                   raise ValueError(f"Data quality check failed. artistid column in {table} contains null {null_count} values ")
             elif record_count < 1:
                 raise ValueError(f"Data quality check failed. {table} contained {record_count}")
+            else:
+                self.log.info(f"Data quality on table {table} check passed with {record_count} records")
             
-            self.log.info(f"Data quality on table {table} check passed with {record_count} records")
